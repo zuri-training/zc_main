@@ -2,9 +2,11 @@ import AgoraRTC from "agora-rtc-sdk-ng";
 import { useEffect, useState } from "react";
 import styles from "./styles/Staging.module.css";
 import VideoPlayer from "./VideoPlayer";
+import VideoRoom from "./VideoRoom";
 
 const Staging = () => {
   // set states
+  const [stage, setStage] = useState(0);
   const [token, setToken] = useState(null);
   const [localTracks, setLocalTracks] = useState([]);
   const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
@@ -29,35 +31,91 @@ const Staging = () => {
 
   // Fetch token from endpoint
 
+  var tracks;
+
   const fetchToken = async () => {
     const response = await fetch();
     const data = await response.json();
     setToken(data.data.token);
   };
   useEffect(() => {
-    // fetchToken();
-    joinStream();
+    client.on("user-published", handleUserJoined);
+    client.on("user-left", handleUserLeft);
+    // return () => {
+    //   for (let localTrack of localTracks) {
+    //     localTrack.stop();
+    //     localTrack.close();
+    //   }
+    //   client.off('user-published', handleUserJoined);
+    //   client.off('user-left', handleUserLeft);
+    //   client.unpublish(tracks).then(() => client.leave());
+    // };
+    return () => {
+      for (let localTrack of localTracks) {
+        localTrack.stop();
+        localTrack.close();
+      }
+      client.off("user-published", handleUserJoined);
+      client.off("user-left", handleUserLeft);
+      client.unpublish(tracks).then(() => client.leave());
+    };
   }, []);
 
-  // local track
+  const handleUserJoined = async (user, mediaType) => {
+    await client.subscribe(user, mediaType);
 
-  const JoinRoom = async () => {
-    await client.join(APP_ID, channelName, Token, uid);
+    if (mediaType === "video") {
+      setUsers(previousUsers => [...previousUsers, user]);
+    }
+
+    if (mediaType === "audio") {
+      // user.audioTrack.play()
+    }
   };
 
-  const joinStream = async () => {
-    const localTrack = await AgoraRTC.createMicrophoneAndCameraTracks();
-    setLocalTracks(localTrack);
-    const [audioTrack, videoTrack] = localTracks;
-    localTracks[1].play("local-video");
+  const handleUserLeft = user => {
+    setUsers(previousUsers => previousUsers.filter(u => u.uid !== user.uid));
+  };
+
+  const JoinRoom = async () => {
+    client
+      .join(APP_ID, channelName, Token, uid)
+      .then(uid =>
+        Promise.all([AgoraRTC.createMicrophoneAndCameraTracks(), uid])
+      )
+      .then(([tracks, uid]) => {
+        const [audioTrack, videoTrack] = tracks;
+        setLocalTracks(tracks);
+        setUsers(previousUsers => [
+          ...previousUsers,
+          {
+            uid,
+            videoTrack,
+            audioTrack
+          }
+        ]);
+        client.publish(tracks);
+      });
+
+    setStage(1);
   };
 
   return (
-    <div className={`${styles.staging}`}>
-      <div className={`${styles.stagingWrapper}`}>
-        <VideoPlayer tracks={localTracks} />
-        <button className={`${styles.stagingBtn}`}>Join Call</button>
-      </div>
+    <div className={`${styles.videoChat}`}>
+      {stage === 0 && (
+        <div className={`${styles.staging}`}>
+          <div className={`${styles.stagingWrapper}`}>
+            <VideoPlayer tracks={localTracks} />
+            <button
+              className={`${styles.stagingBtn}`}
+              onClick={() => JoinRoom()}
+            >
+              Join Call
+            </button>
+          </div>
+        </div>
+      )}
+      {stage === 1 && <VideoRoom left={handleUserLeft} users={users} />}
     </div>
   );
 };
