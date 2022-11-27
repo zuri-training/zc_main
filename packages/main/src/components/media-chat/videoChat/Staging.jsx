@@ -1,6 +1,7 @@
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { useEffect, useState } from "react";
 import styles from "./styles/Staging.module.css";
+import VideoPlayer from "./VideoPlayer";
 
 const Staging = () => {
   // set states
@@ -47,15 +48,14 @@ const Staging = () => {
   const joinStream = async () => {
     const localTrack = await AgoraRTC.createMicrophoneAndCameraTracks();
     setLocalTracks(localTrack);
+    const [audioTrack, videoTrack] = localTracks;
     localTracks[1].play("local-video");
   };
 
   return (
     <div className={`${styles.staging}`}>
       <div className={`${styles.stagingWrapper}`}>
-        <div className={`${styles.videoContainer}`}>
-          <div className={`${styles.userVideo}`}></div>
-        </div>
+        <VideoPlayer tracks={localTracks} />
         <button className={`${styles.stagingBtn}`}>Join Call</button>
       </div>
     </div>
