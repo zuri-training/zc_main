@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import threadIcon from "../assets/icons/thread-icon.svg";
 import dmIcon from "../assets/icons/dm-icon.svg";
 import draftIcon from "../assets/icons/draft-icon.svg";
+import videoIcon from "../assets/icons/videos.svg";
 
 import { subscribeToChannel } from "@zuri/utilities";
 import { ACTIONS } from "../reducers/sidebar.reducer";
@@ -213,7 +214,7 @@ const Sidebar = props => {
               />
               <SingleRoom
                 name="Video Chat"
-                image={dmIcon}
+                image={videoIcon}
                 link={`/workspace/${currentWorkspace}/video-chat`}
               />
               <SingleRoom

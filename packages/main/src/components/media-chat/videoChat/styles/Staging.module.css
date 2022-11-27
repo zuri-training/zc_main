@@ -1,0 +1,37 @@
+.staging{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.stagingWrapper {
+    max-width: 70%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.videoContainer {
+    height: 300px;
+    width: 500px;
+    border-radius: 8px;
+    background-color: black;
+}
+
+.stagingBtn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    color: white;
+    background: #00b87c;
+    display: inline-block;
+}
+
+.userVideo {
+    height: 100%;
+    width: 100%;
+    border-radius: 50px;
+}
