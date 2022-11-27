@@ -212,7 +212,7 @@ export default function Index() {
 
               <Route path="/workspace/:workspaceId/video-chat">
                 {/* <VideoChat workspaceId={workspaceId} /> */}
-                <Staging />
+                <Staging workspaceId={workspaceId} />
                 {/* <h1>Video call</h1> */}
               </Route>
 

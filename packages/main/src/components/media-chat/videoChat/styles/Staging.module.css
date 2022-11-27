@@ -14,9 +14,9 @@
     max-width: 70%;
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 50px;
 }
 
 .videoContainer {
@@ -32,6 +32,10 @@
     color: white;
     background: #00b87c;
     display: inline-block;
+}
+
+.stagingBtn:disabled {
+    background-color: #00b87ba4;
 }
 
 .userVideo {
