@@ -11,15 +11,13 @@ const Staging = ({ workspaceId }) => {
   const [users, setUsers] = useState([]);
   const [token, setToken] = useState(null);
 
-  const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-
   // const APP_ID = process.env.APP_ID;
   // let uid = sessionStorage.getItem("uid");
   // if (!uid) {
   //   uid = String(Math.floor(Math.random() * 1000));
   //   sessionStorage.setItem("uid", uid);
   // }
-  let uid = 0;
+  let uid = 45;
 
   const fetchToken = () => {
     fetch(
@@ -49,7 +47,12 @@ const Staging = ({ workspaceId }) => {
         </div>
       )}
       {stage === 1 && (
-        <VideoRoom token={token} channelName={workspaceId} uid={uid} />
+        <VideoRoom
+          token={token}
+          channelName={workspaceId}
+          uid={uid}
+          closeRoom={setStage}
+        />
       )}
       {/* {stage === 1 && <h1>Hello world, {token}</h1>} */}
     </div>

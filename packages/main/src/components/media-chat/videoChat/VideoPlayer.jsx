@@ -6,8 +6,12 @@ const VideoPlayer = ({ user }) => {
   const ref = useRef();
   useEffect(() => {
     user?.videoTrack.play(ref.current);
-    console.log(user);
-  });
+    user?.audioTrack.play(ref.current);
+    return () => {
+      user?.videoTrack.stop(ref.current);
+      user?.audioTrack.stop(ref.current);
+    };
+  }, []);
   return (
     <div className={`${styles.videoplayer}`}>
       <div ref={ref} className={`${styles.video}`}></div>

@@ -7,13 +7,13 @@ import Video from "./../../../assets/media/video.svg";
 import VideoOff from "./../../../assets/media/video-off.svg";
 import exit from "./../../../assets/media/exit.svg";
 import AgoraRTC from "agora-rtc-sdk-ng";
+import { Grid } from "@material-ui/core";
 
-const VideoRoom = ({ token, channelName, uid }) => {
-  const [audio, setAudio] = useState(false);
-  const [video, setVideo] = useState(false);
-
+const VideoRoom = ({ token, channelName, uid, closeRoom }) => {
+  const [trackState, setTrackState] = useState({ video: true, audio: true });
   const [localTracks, setLocalTracks] = useState([]);
   const [users, setUsers] = useState([]);
+  const [gridSpacing, setGridSpacing] = useState(12);
 
   const Token =
     "007eJxTYCg4rxx58lbmlL/r1kg+2D312JOzZS5hYdO91vrt2s++QnWDAkOapaFBomFakklyWqpJsqmlpVmypbllsqlJqqm5QVKiuefF5uSGQEYGU6lIRkYGCATxJRjMjM0sjA0tzEzMTcwMLYwSUxJTLc2SzJIYGAC/2yVr";
@@ -41,16 +41,13 @@ const VideoRoom = ({ token, channelName, uid }) => {
   };
 
   useEffect(() => {
+    setGridSpacing(Math.max(Math.floor(12 / (users.length + 1)), 4));
+
     client.on("user-published", handleUserJoined);
     client.on("user-left", handleUserLeft);
 
     client
-      .join(
-        APP_ID,
-        channelName,
-        `006IAABFotlKGKGu5QuJIdrioboVds+CKsQI1JPHw/vA8yQdYn2OGQAAAAAIgDplc0CFi6FYwQAAQC2+INjAgC2+INjAwC2+INjBAC2+INj`,
-        parseInt(uid)
-      )
+      .join(APP_ID, channelName, `${Token}`, parseInt(uid))
       .then(uid =>
         Promise.all([AgoraRTC.createMicrophoneAndCameraTracks(), uid])
       )
@@ -77,26 +74,51 @@ const VideoRoom = ({ token, channelName, uid }) => {
       client.off("user-left", handleUserLeft);
       client.unpublish(localTracks).then(() => client.leave());
     };
-  }, []);
+  }, [users, localTracks]);
+
+  const mute = async type => {
+    if (type === "audio") {
+      await localTracks[0].setEnabled(!trackState.audio);
+      setTrackState(ps => {
+        return { ...ps, audio: !ps.audio };
+      });
+    } else if (type === "video") {
+      await localTracks[1].setEnabled(!trackState.video);
+      setTrackState(ps => {
+        return { ...ps, video: !ps.video };
+      });
+    }
+  };
+
+  const leaveChannel = async () => {
+    await client.leave();
+    client.removeAllListeners();
+    localTracks[0].close();
+    localTracks[1].close();
+    closeRoom(prev => prev - 1);
+  };
 
   return (
     <div className={`${Styles.videoroom}`}>
-      <div>
-        <h1>{token}</h1>
-      </div>
       <div className={`${Styles.videoroomRooms}`}>
-        {users.map(user => {
-          return <VideoPlayer key={user.id} user={user} />;
-        })}
+        <Grid item xs={gridSpacing} columnSpacing={{ xs: 1, sm: 1, md: 1 }}>
+          {users.map(user => {
+            return <VideoPlayer key={user.id} user={user} />;
+          })}
+        </Grid>
       </div>
       <div className={`${Styles.controlBar}`}>
-        <div className="audio" onClick={() => setAudio(prev => !prev)}>
-          <img src={audio ? Mic : MicOff} alt="" />
+        <div className="audio" onClick={() => mute("audio")}>
+          <img src={trackState.audio ? Mic : MicOff} alt="" />
         </div>
-        <div className="video" onClick={() => setVideo(prev => !prev)}>
-          <img src={video ? Video : VideoOff} alt="" />
+        <div className="video" onClick={() => mute("video")}>
+          <img src={trackState.video ? Video : VideoOff} alt="" />
         </div>
-        <div className="leave" style={{ background: "red" }}>
+        <div
+          className="leave"
+          style={{ background: "red" }}
+          onClick={() => leaveChannel()}
+        >
           <img src={exit} alt="" />
         </div>
       </div>
