@@ -45,7 +45,12 @@ const VideoRoom = ({ token, channelName, uid }) => {
     client.on("user-left", handleUserLeft);
 
     client
-      .join(APP_ID, channelName, `${token}`, 0)
+      .join(
+        APP_ID,
+        channelName,
+        `006IAABFotlKGKGu5QuJIdrioboVds+CKsQI1JPHw/vA8yQdYn2OGQAAAAAIgDplc0CFi6FYwQAAQC2+INjAgC2+INjAwC2+INjBAC2+INj`,
+        parseInt(uid)
+      )
       .then(uid =>
         Promise.all([AgoraRTC.createMicrophoneAndCameraTracks(), uid])
       )

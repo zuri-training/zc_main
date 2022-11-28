@@ -14,14 +14,17 @@ const Staging = ({ workspaceId }) => {
   const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 
   // const APP_ID = process.env.APP_ID;
-  let uid = sessionStorage.getItem("uid");
-  if (!uid) {
-    uid = String(Math.floor(Math.random() * 1000));
-    sessionStorage.setItem("uid", uid);
-  }
+  // let uid = sessionStorage.getItem("uid");
+  // if (!uid) {
+  //   uid = String(Math.floor(Math.random() * 1000));
+  //   sessionStorage.setItem("uid", uid);
+  // }
+  let uid = 0;
 
   const fetchToken = () => {
-    fetch(`https://localH/rtc/${workspaceId}/publisher/uid/0/`)
+    fetch(
+      `https://staging.api.zuri.chat/rtc/${workspaceId}/publisher/uid/${uid}/`
+    )
       .then(res => res.json())
       .then(data => {
         setToken(data.data.token);
