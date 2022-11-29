@@ -16,7 +16,7 @@ const VideoRoom = ({ token, channelName, uid, closeRoom }) => {
   const [gridSpacing, setGridSpacing] = useState(12);
 
   const Token =
-    "007eJxTYCg4rxx58lbmlL/r1kg+2D312JOzZS5hYdO91vrt2s++QnWDAkOapaFBomFakklyWqpJsqmlpVmypbllsqlJqqm5QVKiuefF5uSGQEYGU6lIRkYGCATxJRjMjM0sjA0tzEzMTcwMLYwSUxJTLc2SzJIYGAC/2yVr";
+    "007eJxTYJAx0Y28utownt+TQXvK3CtKQc+k4+UWuR7bumDO4mtrtX4oMKRZGhokGqYlmSSnpZokm1pamiVbmlsmm5qkmpobJCWaz/jQmtwQyMgg7nKahZEBAkF8CQYzYzMLY0MLMxNzEzNDC6PElMRUS7MksyQGBgBbAyLx";
   const APP_ID = "f910a1fb4cfe4c5996c979c54e570ba7";
 
   const client = AgoraRTC.createClient({
@@ -47,7 +47,7 @@ const VideoRoom = ({ token, channelName, uid, closeRoom }) => {
     client.on("user-left", handleUserLeft);
 
     client
-      .join(APP_ID, channelName, `${Token}`, parseInt(uid))
+      .join(APP_ID, channelName, `${token}`, uid)
       .then(uid =>
         Promise.all([AgoraRTC.createMicrophoneAndCameraTracks(), uid])
       )
@@ -74,7 +74,7 @@ const VideoRoom = ({ token, channelName, uid, closeRoom }) => {
       client.off("user-left", handleUserLeft);
       client.unpublish(localTracks).then(() => client.leave());
     };
-  }, [users, localTracks]);
+  }, []);
 
   const mute = async type => {
     if (type === "audio") {
@@ -101,11 +101,11 @@ const VideoRoom = ({ token, channelName, uid, closeRoom }) => {
   return (
     <div className={`${Styles.videoroom}`}>
       <div className={`${Styles.videoroomRooms}`}>
-        <Grid item xs={gridSpacing} columnSpacing={{ xs: 1, sm: 1, md: 1 }}>
-          {users.map(user => {
-            return <VideoPlayer key={user.id} user={user} />;
-          })}
-        </Grid>
+        {users.map(user => {
+          return <VideoPlayer key={user.id} user={user} />;
+        })}
+        {/* <Grid item xs={gridSpacing} columnSpacing={{ xs: 1, sm: 1, md: 1 }}>
+        </Grid> */}
       </div>
       <div className={`${Styles.controlBar}`}>
         <div className="audio" onClick={() => mute("audio")}>

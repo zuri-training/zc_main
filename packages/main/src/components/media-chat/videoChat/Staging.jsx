@@ -1,4 +1,3 @@
-import AgoraRTC from "agora-rtc-sdk-ng";
 import { useEffect, useState } from "react";
 import styles from "./styles/Staging.module.css";
 import VideoPlayer from "./VideoPlayer";
@@ -12,12 +11,11 @@ const Staging = ({ workspaceId }) => {
   const [token, setToken] = useState(null);
 
   // const APP_ID = process.env.APP_ID;
-  // let uid = sessionStorage.getItem("uid");
-  // if (!uid) {
-  //   uid = String(Math.floor(Math.random() * 1000));
-  //   sessionStorage.setItem("uid", uid);
-  // }
-  let uid = 45;
+  let uid = sessionStorage.getItem("uid");
+  if (!uid) {
+    uid = String(Math.floor(Math.random() * 1000));
+    sessionStorage.setItem("uid", uid);
+  }
 
   const fetchToken = () => {
     fetch(
@@ -54,7 +52,6 @@ const Staging = ({ workspaceId }) => {
           closeRoom={setStage}
         />
       )}
-      {/* {stage === 1 && <h1>Hello world, {token}</h1>} */}
     </div>
   );
 };

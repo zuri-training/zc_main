@@ -5,11 +5,8 @@
 }
 
 .controlBar{
-    bottom: 20px;
+    margin-top: 10px;
     height: 5%;
-    /* left: 0;
-    right: 0;
-    position: absolute; */
     height: 80px;
     background-color: black;
     width: 100%;
